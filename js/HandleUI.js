@@ -2,24 +2,39 @@ let liElements = document.getElementsByClassName('task');
 const taskNumber = document.querySelector('h1 span');
 
 class HandleUI {
-    static displayBooks() {
-        const books = LocalStorage.getBooks();
+    static displayTodos() {
+        let todos;
 
-        books.forEach((book) => HandleUI.addBookToList(book));
+        if (supports_storage) {
+            todos = LocalStorage.getTodos();
+        } else {
+            todos = SessionStorage.getTodos();
+        }
+
+        todos.forEach((todo) => HandleUI.addTodoToList(todo));
     }
 
-    static addBookToList(book) {
+    static addTodoToList(todo) {
         const list = document.querySelector('.todo');
-
         const li = document.createElement('li');
-        li.innerHTML = `${book.title} <button class="delete">x</button>`;
+        const button = document.createElement('button');
+
+        button.textContent = 'x';
+        button.classList.add('delete');
+        button.classList.add('btn-primary');
+        button.addEventListener('click', removeTodoFromList);
+
+        li.innerHTML = `${todo.title}`;
+
         li.className = 'task';
+        li.style.fontSize = '30px';
+        li.style.listStyleType = 'none';
         taskNumber.textContent = liElements.length + 1;
-        // console.log('liElements.length ' + liElements.length);
+        li.appendChild(button);
         list.appendChild(li);
     }
 
-    static deleteBook(el) {
+    static deleteTodo(el) {
         if (el.classList.contains('delete')) {
             el.parentElement.remove();
             taskNumber.textContent = liElements.length;
@@ -34,7 +49,6 @@ class HandleUI {
         const form = document.querySelector('.form-control');
         container.insertBefore(div, form);
 
-        // Vanish in 3 seconds
         setTimeout(() => document.querySelector('.alert').remove(), 3000);
     }
 
